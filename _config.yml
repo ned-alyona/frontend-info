@@ -24,7 +24,7 @@ linkedin_username: nedelchenko-alyona-2663bb78
 
 # Build settings
 # markdown: kramdown
-theme: jekyll-theme-minimal
+theme: minima
 plugins:
   - jekyll-feed
 
