@@ -15,7 +15,7 @@
 <script type="application/ld+json">
 {"@type":"BlogPosting","url":"http://localhost:4000/testing/2018/09/28/what-and-how-to-test-with-jest-and-enzyme.html","headline":"What and How to Test with Jest and Enzyme. Full Instruction on React Components Testing","dateModified":"2018-09-28T09:41:18+03:00","datePublished":"2018-09-28T09:41:18+03:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/testing/2018/09/28/what-and-how-to-test-with-jest-and-enzyme.html"},"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href=".//assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Frontend Info" /></head>
+<link rel="stylesheet" href="./assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Frontend Info" /></head>
 <body><header class="site-header" role="banner">
 
   <div class="wrapper"><a class="site-title" rel="author" href="/">Frontend Info</a><nav class="site-nav">
@@ -43,7 +43,7 @@
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <p><img src="/assets/images/cover.png" alt="Cover image" /></p>
+    <p><img src="./assets/images/cover.png" alt="Cover image" /></p>
 
 <p>Testing React components may be challenging for beginners and experienced developers who have already worked with tests. It may be interesting to compare your own approaches with the ones we use in our project. In order to cover the codebase, you have to know which components must be tested and which code exactly in component should be covered.</p>
 
@@ -87,11 +87,11 @@
 
 <p>Let’s discuss this question on the next part of project structure:</p>
 
-<p><img src="/assets/images/project-structure.png" alt="Project structure image" /></p>
+<p><img src="./assets/images/project-structure.png" alt="Project structure image" /></p>
 
 <p>I took <code class="highlighter-rouge">shared</code> directory because it is the most important; it consists of the components that are used in several different pages of the project. They are reusable and normally, they are small and not complex. If one or another component fails, it will cause failing in other places. That’s why we should be confident whether they have been written correctly. The structure of this directory is divided into several folders,  each containing components.</p>
 
-<p><img src="/assets/images/testing-queue.png" alt="Defining queue for Test Coverage image" /></p>
+<p><img src="./assets/images/testing-queue.png" alt="Defining queue for Test Coverage image" /></p>
 
 <p>How to define the correct order of component testing in <code class="highlighter-rouge">shared</code> directory:</p>
 <ul>
@@ -105,7 +105,7 @@
 
 <p>The final components order (based on our example) will look like this:</p>
 
-<p><img src="/assets/images/testing-order.png" alt="Components order image" /></p>
+<p><img src="./assets/images/testing-order.png" alt="Components order image" /></p>
 
 <p>Following this order, you increase complexity of the tested components step by step; thus, when it comes to operating with the more complex components, you already know how the smallest ones behave. Don’t take for testing, for example, ‘array’ field, if you are not sure how to test ‘text’ field; don’t take components decorated with redux-form if you haven’t tested ‘form’ field itself. Be consistent in your choices, don’t take the first component that comes into your mind, and switch on logic. Of course, the structure of your project can differ; it can have other directory names or can have additional components, actions, and reducers, but the logic of defining the order for testing the components is the same.</p>
 
@@ -182,7 +182,7 @@ exports[`Render TextInput correctly component 1`] = `
       </li>
     </ul>
 
-    <p><img src="/assets/images/fail.gif" alt="Tests failed animation" /></p>
+    <p><img src="./assets/images/fail.gif" alt="Tests failed animation" /></p>
   </li>
   <li>
     <p>The component has not changed</p>
@@ -199,7 +199,7 @@ exports[`Render TextInput correctly component 1`] = `
       </li>
     </ul>
 
-    <p><img src="/assets/images/success.gif" alt="Tests succeeded animation" /></p>
+    <p><img src="./assets/images/success.gif" alt="Tests succeeded animation" /></p>
   </li>
 </ol>
 
@@ -270,7 +270,7 @@ Take one component from <em>forms/inputs</em> directory; let it be DateInput.js,
 
 <p><strong>Looks like:</strong></p>
 
-<p><img src="/assets/images/datepicker.gif" alt="Datepicker animation" /></p>
+<p><img src="./assets/images/datepicker.gif" alt="Datepicker animation" /></p>
 
 <p>DateInput component uses library react-datepicker, with two utilities: valueToDate (converts value to date) and dateToValue is vice versa, moment package for manipulating with date and PropTypes for checking React props.</p>
 
@@ -459,7 +459,7 @@ const DateInput = (props) =&gt;
 
 <p><strong>Looks like:</strong></p>
 
-<p><img src="/assets/images/spinner.gif" alt="Spinner animation" /></p>
+<p><img src="./assets/images/spinner.gif" alt="Spinner animation" /></p>
 
 <p>Spinner is not required in explanation, as almost all web resources have this component.
 So go to write tests:</p>
@@ -580,7 +580,7 @@ So go to write tests:</p>
 
 <p><strong>Looks like:</strong></p>
 
-<p><img src="/assets/images/modal.gif" alt="Spinner animation" /></p>
+<p><img src="./assets/images/modal.gif" alt="Spinner animation" /></p>
 
 <p><strong>How to test modals:</strong></p>
 
@@ -962,7 +962,7 @@ beforeEach(() =&gt; {
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">Frontend Info</li><li><a class="u-email" href="mailto:alona.nedelchenko@djangostars.com">alona.nedelchenko@djangostars.com</a></li><ul class="social-media-list"><li><a href="https://github.com/ned-alyona"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username"></span></a></li><li><a href="https://www.linkedin.com/in/nedelchenko-alyona-2663bb78"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#linkedin"></use></svg> <span class="username"></span></a></li></ul>
+          <li class="p-name">Frontend Info</li><li><a class="u-email" href="mailto:alona.nedelchenko@djangostars.com">alona.nedelchenko@djangostars.com</a></li><ul class="social-media-list"><li><a href="https://github.com/ned-alyona"><svg class="svg-icon"><use xlink:href="./assets/minima-social-icons.svg#github"></use></svg> <span class="username"></span></a></li><li><a href="https://www.linkedin.com/in/nedelchenko-alyona-2663bb78"><svg class="svg-icon"><use xlink:href="./assets/minima-social-icons.svg#linkedin"></use></svg> <span class="username"></span></a></li></ul>
 </ul>
       </div>
 
