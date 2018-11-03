@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>What and How to Test with Jest and Enzyme. Full Instruction on React Components Testing | Frontend Info</title>
+<meta name="generator" content="Jekyll v3.7.4" />
+<meta property="og:title" content="What and How to Test with Jest and Enzyme. Full Instruction on React Components Testing" />
+<meta property="og:locale" content="en_US" />
+<link rel="canonical" href="http://localhost:4000/testing/2018/09/28/what-and-how-to-test-with-jest-and-enzyme.html" />
+<meta property="og:url" content="http://localhost:4000/testing/2018/09/28/what-and-how-to-test-with-jest-and-enzyme.html" />
+<meta property="og:site_name" content="Frontend Info" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-09-28T09:41:18+03:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","url":"http://localhost:4000/testing/2018/09/28/what-and-how-to-test-with-jest-and-enzyme.html","headline":"What and How to Test with Jest and Enzyme. Full Instruction on React Components Testing","dateModified":"2018-09-28T09:41:18+03:00","datePublished":"2018-09-28T09:41:18+03:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/testing/2018/09/28/what-and-how-to-test-with-jest-and-enzyme.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Frontend Info" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Frontend Info</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+        <div class="wrapper">
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">What and How to Test with Jest and Enzyme. Full Instruction on React Components Testing</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-09-28T09:41:18+03:00" itemprop="datePublished">Sep 28, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><img src="/assets/images/cover.png" alt="Cover image" /></p>
+
+<p>Testing React components may be challenging for beginners and experienced developers who have already worked with tests. It may be interesting to compare your own approaches with the ones we use in our project. In order to cover the codebase, you have to know which components must be tested and which code exactly in component should be covered.</p>
+
+<p>During reading, I’ll cover the next topics:</p>
+<ul>
+  <li>Define the correct order of components’ testing based on project structure</li>
+  <li>Find what to omit in test coverage (what not to test)</li>
+  <li>Identify the necessity of Snapshot Testing</li>
+  <li>Define what to test in the component and in which order</li>
+  <li>Provide detailed custom code examples</li>
+</ul>
+
+<p>The article requires that the reader already has knowledge about Jest and Enzyme setup. Information about installation and configuration can be easily found on the web or official websites.</p>
+
+<p>Assume the following case: You need to cover the project codebase with tests, so what should you start with and what should you get at the end of testing? 100% test coverage? It is the indicator to which you should aspire, but in most situations you won’t get it. Why? Because you shouldn’t test all code. We will find out why and what should be left out of tests. Even more, 100% test coverage does not always ensure that the component is fully tested. As well, there is no guarantee it will notify you if something has been changed. Don’t strive for the percentages, avoid writing fake tests, and just try not to lose main component details.</p>
+
+<h2 id="-table-of-contents">📚 Table of Contents</h2>
+<ul>
+  <li><a href="#correct-order-of-components-testing">Correct order of components’ testing</a></li>
+  <li><a href="#what-should-be-omitted-in-test-coverage">What should be omitted in test coverage</a></li>
+  <li><a href="#how-to-test-with-snapshots">How to test with snapshots</a></li>
+  <li><a href="#main-instructions-for-component-testing">Main instructions for component testing</a></li>
+  <li><a href="#examples-of-testing">Examples of Testing</a>
+    <ul>
+      <li><a href="#testing-datepicker-component">Testing Datepicker component</a></li>
+      <li><a href="#utility-testing">Utility testing (valueToDate)</a></li>
+      <li><a href="#widgets-testing">Widgets testing (Spinner)</a></li>
+      <li><a href="#modals-testing">Modals testing (ModalWrapper and ModalTrigger)</a>
+        <ul>
+          <li><a href="#modal-wrapper-testing">ModalWrapper testing</a></li>
+          <li><a href="#modal-trigger-testing">ModalTrigger testing</a></li>
+        </ul>
+      </li>
+      <li><a href="#hoc-testing">HOC testing (BaseFieldHOC)</a></li>
+      <li><a href="#fields-testing">Form fields testing (BaseFieldLayout)</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="defining-the-correct-order-of-components-testing-based-on-project-structure"><a name="correct-order-of-components-testing"></a>Defining the correct order of components’ testing based on project structure</h2>
+
+<p>Let’s discuss this question on the next part of project structure:</p>
+
+<p><img src="/assets/images/project-structure.png" alt="Project structure image" /></p>
+
+<p>I took <code class="highlighter-rouge">shared</code> directory because it is the most important; it consists of the components that are used in several different pages of the project. They are reusable and normally, they are small and not complex. If one or another component fails, it will cause failing in other places. That’s why we should be confident whether they have been written correctly. The structure of this directory is divided into several folders,  each containing components.</p>
+
+<p><img src="/assets/images/testing-queue.png" alt="Defining queue for Test Coverage image" /></p>
+
+<p>How to define the correct order of component testing in <code class="highlighter-rouge">shared</code> directory:</p>
+<ul>
+  <li>Always follow the rule <em>from simple to complex</em>. Analyze each directory and define which components are <code class="highlighter-rouge">independent</code> - namely, their rendering doesn’t depend on the other components; they are self-completed and can be used separately as a single unit. From the structure above, it is <code class="highlighter-rouge">inputs</code> directory in <code class="highlighter-rouge">forms</code> folder. It contains input components to redux-forms, such as TextInput, SelectInput, CheckboxInput, DateInput, etc.</li>
+  <li>Next, I need to define auxiliary components that are often used in <code class="highlighter-rouge">inputs</code> components, but should be tested apart from them. It is utils` directory. Components in this folder are not complicated, but very important. They are frequently reusable and help with repeated actions.</li>
+  <li>The next step is to define which components can be used independently too. If any, take them for testing. From our structure, it is <code class="highlighter-rouge">widgets</code>, the little components with simple functionality. They will be the third item in the queue for test coverage.</li>
+  <li>Further, analyze the rest of the directories and define more complex components, which can be used independently or in conjunction with other components. It is <code class="highlighter-rouge">modals</code> directory in our case; these components will be explained in detail below.</li>
+  <li>The most complex for testing components are left in the end. They are <code class="highlighter-rouge">hoc</code> directory and <code class="highlighter-rouge">fields</code> from <code class="highlighter-rouge">forms</code> folder. How do you define which one should be tested first? I take the directory from which components have already been used in tested components. Thus, component from <code class="highlighter-rouge">hoc</code> directory was present in <code class="highlighter-rouge">widgets</code> component; that’s why I already know where and with which purpose this directory and its component are used.</li>
+  <li>The last one is the <code class="highlighter-rouge">fields</code> folder; it contains components connected with redux-forms.</li>
+</ul>
+
+<p>The final components order (based on our example) will look like this:</p>
+
+<p><img src="/assets/images/testing-order.png" alt="Components order image" /></p>
+
+<p>Following this order, you increase complexity of the tested components step by step; thus, when it comes to operating with the more complex components, you already know how the smallest ones behave. Don’t take for testing, for example, ‘array’ field, if you are not sure how to test ‘text’ field; don’t take components decorated with redux-form if you haven’t tested ‘form’ field itself. Be consistent in your choices, don’t take the first component that comes into your mind, and switch on logic. Of course, the structure of your project can differ; it can have other directory names or can have additional components, actions, and reducers, but the logic of defining the order for testing the components is the same.</p>
+
+<p><strong><a name="what-should-be-omitted-in-test-coverage"></a> Let’s define what should be omitted in test coverage:</strong></p>
+<ol>
+  <li><em>Third-party libraries.</em> Don’t test functionality that is taken from another library; you are not responsible for that code. Skip it or imitate implementation if you need it to test your code.</li>
+  <li><em>Constants.</em> The name speaks for itself. They are not changeable; it is a set of static code that is not intended to vary.</li>
+  <li><em>Inline styles</em> (if you use them in component). In order to test inline styles, you need to duplicate object with styles in your test; if styles object changes, you must change it in test too. Don’t duplicate component’s code in tests; you will never keep in mind to change it in tests. Moreover, your colleague will never guess about duplication. In most cases, inline styles don’t change component’s behaviour; consequently, they shouldn’t be tested. There can be an exception in case your styles change dynamically.</li>
+  <li><em>Things not related to the tested component.</em> Skip covering with tests components that were imported in the tested component; be careful if it is wrapped in another one. Don’t test wrapper, just analyze and test them separately.</li>
+</ol>
+
+<p>So how do you actually write tests? I combine two testing approaches:</p>
+<ul>
+  <li>Snapshot Testing</li>
+  <li>Component logic testing</li>
+</ul>
+
+<p>Snapshot Testing is a useful testing tool in case you want to be sure user interface hasn’t changed. When facing this testing tool for the first time, questions arise concerning organization and managing snapshots. The principle of work is very simple, but unfortunately it has not been fully described anywhere; on the official website jestjs.io, description of Snapshot Testing work is very poor.</p>
+
+<h2 id="-how-to-test-with-snapshots"><a name="how-to-test-with-snapshots"></a> How to test with snapshots</h2>
+<p><strong>Step 1</strong>. Write test for the component and in the expect block, use <code class="highlighter-rouge">.toMatchSnapshot()</code> method that creates <code class="highlighter-rouge">Snapshot</code> itself.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('render correctly text component', () =&gt; {
+    const TextInputComponent = renderer.create(&lt;TextInput /&gt;).toJSON();
+    expect(TextInputComponent).toMatchSnapshot();
+});
+</code></pre></div></div>
+
+<p><strong>Step 2</strong>. When you run test for the first time on the one level, along with the test, there will be a created directory named <code class="highlighter-rouge">__snapshots__</code> with the autogenerated file inside with the extension <code class="highlighter-rouge">.snap</code>.</p>
+
+<p>Snapshot looks like:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render TextInput correctly component 1`] = `
+&lt;input
+  className="input-custom"
+  disabled={undefined}
+  id={undefined}
+  name={undefined}
+  onBlur={undefined}
+  onChange={[Function]}
+  pattern={undefined}
+  placeholder={undefined}
+  readOnly={false}
+  required={undefined}
+  type="text"
+  value={undefined}
+/&gt;
+`;
+</code></pre></div></div>
+
+<p><strong>Step 3</strong>. Push snapshot into the repository and store it along with the test.</p>
+
+<p>If component has been changed, you need just update snapshot with <code class="highlighter-rouge">—updateSnapshot</code> flag or using shot form <code class="highlighter-rouge">u</code> flag.</p>
+
+<p><strong>Snapshot is created; how does it work?</strong></p>
+
+<p>Let us consider two cases:</p>
+
+<ol>
+  <li>
+    <p>The component has changed</p>
+
+    <ul>
+      <li>
+        <p>Run tests</p>
+      </li>
+      <li>
+        <p>New snapshot is created, it compares with the auto generated snapshot stored in the directory <code class="highlighter-rouge">__snapshots__</code></p>
+      </li>
+      <li>
+        <p>Tests failed because snapshot is different</p>
+      </li>
+    </ul>
+
+    <p><img src="/assets/images/fail.gif" alt="Tests failed animation" /></p>
+  </li>
+  <li>
+    <p>The component has not changed</p>
+
+    <ul>
+      <li>
+        <p>Run tests</p>
+      </li>
+      <li>
+        <p>New snapshot is created, it compares with the auto generated snapshot stored in the directory <code class="highlighter-rouge">__snapshots__</code></p>
+      </li>
+      <li>
+        <p>Tests passed because snapshot is identical</p>
+      </li>
+    </ul>
+
+    <p><img src="/assets/images/success.gif" alt="Tests succeeded animation" /></p>
+  </li>
+</ol>
+
+<p>Everything is fine when I test a small component without logic, just UI rendering, but as practice shows, there are no such components on real projects. If they are, they are in a small amount.</p>
+
+<p><strong>Is there enough snapshot for full component testing?</strong></p>
+
+<p>The answer is “No”. I stick to the approach to combine Snapshot Testing with manually written tests for component logic. The reason is in the component’s states, props, and conditions inside. One snapshot can be generated with one current state or condition of the component. What do you do with the others? Create 5-10 snapshots and store them along with the test? I would say it is not a right way, so don’t practice this technique. Use snapshots for testing UI and manually written tests for testing functionality.</p>
+
+<h2 id="main-instructions-for-component-testing"><a name="main-instructions-for-component-testing"></a>Main instructions for component testing</h2>
+
+<ol>
+  <li>
+    <p>One component should have only one snapshot. If one snapshot fails, most likely the others will fail too, so do not create and store a bunch of unnecessary snapshots clogging the space and confusing developers who will read your tests after you. Of course, there are exceptions when you need to test the behavior of a component in two states; for example, in the state of the component before opening the pop-up and after opening. However, even such variant can always be replaced by this one: the first test stores default state of the component without popup in snapshot, and the second test simulates event and checks the presence of a particular class. In this way, you can easily bypass the creation of several snapshots.</p>
+  </li>
+  <li>
+    <p>Testing props: As a rule, I divide the testing of the props into two tests:</p>
+
+    <ul>
+      <li>
+        <p>Firstly, check the render of default prop values; when the component is rendered, I expect a value to be equal from <code class="highlighter-rouge">defaultProps</code> in case this prop has <code class="highlighter-rouge">defaultProps</code>.</p>
+      </li>
+      <li>
+        <p>Secondly, check the custom value of the prop; I set my own value and expect it to be received after the render of the component.</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Testing data types: In order to test what type of data comes in the props or what kind of data is obtained after certain actions, I use the special library jest-extended (Additional Jest matchers), which has an extended set of matches that are absent in the Jest. With this library, testing of data types is much easier and more enjoyable. Testing proptypes is a contradictory question. Some developers can argue against proptypes testing because it is a third-party package and shouldn’t be tested, but I insist on testing components’ proptypes because I don’t test the package functionality itself; I just ensure the proptypes are correct. Data type is a very important programming part and shouldn’t be skipped.</p>
+  </li>
+  <li>
+    <p>Event testing: After creating a snapshot and covering props with tests, you can be sure in correct rendering of the component, but this is not enough for full coverage in case you have events in the component. You can check event in several ways; the most widely used are:</p>
+
+    <ul>
+      <li>
+        <p>mock event =&gt; simulate it =&gt; expect event was called</p>
+      </li>
+      <li>
+        <p>mock event =&gt; simulate event with params =&gt; expect event was called with passed params</p>
+      </li>
+      <li>
+        <p>pass necessary props =&gt; render component =&gt; simulate event =&gt; expect a certain behavior on called event</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Testing conditions: Very often you can have conditions for the output of a particular class, rendering a certain section of the code, transferring the required props, and so on. Do not forget about this because with default values, only one branch will pass the test, while the second one will remain untested. In  complex components with calculations and lots of conditions, you can miss some branches. To make sure all parts of the code are covered by tests, use test coverage tool and visually check which branches are covered and which are not.</p>
+  </li>
+  <li>
+    <p>States’ testing: To check state, in most cases, it is necessary to write two tests:</p>
+    <ul>
+      <li>The first one checks current state.</li>
+      <li>The second one checks state after calling event. Render component =&gt; call function directly in the test =&gt; check how state has changed. To call function of the component, you need to get an instance of the component and only then call its methods (example is shown in <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/modals/__tests__/ModalTrigger.test.js#L30">next test</a>).</li>
+    </ul>
+  </li>
+</ol>
+
+<p>After you walk through this list of instructions, your component will be covered from 90 to 100%. I leave 10% for special cases that were not described in the article, but can occur in the code.</p>
+
+<h2 id="examples-of-testing"><a name="examples-of-testing"></a>Examples of Testing</h2>
+
+<p>Let’s move to examples and cover components with tests under described above structure step by step.</p>
+
+<p><strong><a name="testing-datepicker-component"></a>1. Testing of a component from forms/inputs.</strong>
+Take one component from <em>forms/inputs</em> directory; let it be DateInput.js, the component for datepicker field.</p>
+
+<p><strong>Code listing for tested component:</strong> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/forms/inputs/DateInput.js">DateInput.js</a></p>
+
+<p><strong>Looks like:</strong></p>
+
+<p><img src="/assets/images/datepicker.gif" alt="Datepicker animation" /></p>
+
+<p>DateInput component uses library react-datepicker, with two utilities: valueToDate (converts value to date) and dateToValue is vice versa, moment package for manipulating with date and PropTypes for checking React props.</p>
+
+<p>According to the component code, we can see the list of default props with the help of which the component should be rendered:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const defaultProps = {
+    inputClassName: 'input-custom',
+    monthsShown: 1,
+    dateFormat: 'DD.MM.YYYY',
+    showMonthYearsDropdowns: false,
+    minDate: moment()
+};
+</code></pre></div></div>
+
+<p>All props are appropriate for creating snapshot, except one <code class="highlighter-rouge">minDate: moment()</code>, moment() will give us current date each time we run test and snapshot will fail because it stores outdated date. Solution is to mock this value:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const defaultProps = {
+    minDate: moment(0)
+}
+</code></pre></div></div>
+
+<p>minDate prop I need in each rendered component; to avoid props duplication, I create HOC which receives defaultProps and returns pretty component:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import TestDateInput from '../DateInput';
+
+const DateInput = (props) =&gt;
+    &lt;TestDateInput
+        {...defaultProps}
+        {...props}
+    /&gt;;
+</code></pre></div></div>
+
+<p>Don’t forget about <code class="highlighter-rouge">moment-timezone</code>, especially if your tests will be run by developers from another country in a different time zone. They will receive mocked value, but with time zone shift. Solution is to set default time zone:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const moment = require.requireActual('moment-timezone').tz.setDefault('America/Los_Angeles')
+</code></pre></div></div>
+
+<p>Now date input component is ready for testing:</p>
+
+<ol>
+  <li>
+    <p>Create snapshot first:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('render correctly date component', () =&gt; {
+     const DateInputComponent = renderer.create(&lt;DateInput /&gt;).toJSON();
+     expect(DateInputComponent).toMatchSnapshot();
+ });
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Testing props:</p>
+
+    <p>Look through props and find important; first prop to test is showMonthYearsDropdowns, if it set to true, the dropdown for month and years is shown:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check month and years dropdowns displayed', () =&gt; {
+     const props = {
+             showMonthYearsDropdowns: true
+         },
+         DateInputComponent = mount(&lt;DateInput {...props} /&gt;).find('.datepicker');
+     expect(DateInputComponent.hasClass('react-datepicker-hide-month')).toEqual(true);
+ });
+</code></pre></div>    </div>
+
+    <p>Test null prop value; this check is required to ensure the component is rendered without defined value:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('render date input correctly with null value', () =&gt; {
+     const props = {
+             value: null
+         },
+         DateInputComponent = mount(&lt;DateInput {...props} /&gt;);
+     expect((DateInputComponent).prop('value')).toEqual(null);
+ });
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Test proptypes for value, date expected to be string:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check the type of value', () =&gt; {
+     const props = {
+             value: '10.03.2018'
+         },
+         DateInputComponent = mount(&lt;DateInput {...props} /&gt;);
+     expect(DateInputComponent.prop('value')).toBeString();
+ });
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Test events:</p>
+
+    <p>4.1. Check the onChange event, for that mock onChange callback =&gt; render date input component =&gt; then simulate change event with new target value =&gt; and finally check that onChange event have been called with new value.</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check the onChange callback', () =&gt; {
+     const onChange = jest.fn(),
+         props = {
+             value: '20.01.2018',
+             onChange
+         },
+         DateInputComponent = mount(&lt;DateInput {...props} /&gt;).find('input');
+     DateInputComponent.simulate('change', { target: {value: moment('2018-01-22')} });
+     expect(onChange).toHaveBeenCalledWith('22.01.2018');
+ });
+</code></pre></div>    </div>
+
+    <p>4.2. Ensure datepicker popup opens after click on date input, for that find date input =&gt; simulate click event =&gt; and expect popup with class <code class="highlighter-rouge">.react-datepicker</code> is present.</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check DatePicker popup open', () =&gt; {
+     const DateComponent = mount(&lt;DateInput /&gt;),
+         dateInput = DateComponent.find("input[type='text']");
+     dateInput.simulate('click');
+     expect(DateComponent.find('.react-datepicker')).toHaveLength(1);
+ });
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p><em>Full tests listing:</em> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/forms/inputs/__tests__/DateInput.test.js">DateInput.test.js</a></p>
+
+<p><strong><a name="utility-testing"></a>2. Utility testing:</strong></p>
+
+<p><strong>Code listing for tested utility:</strong> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/utils/valueToDate.js">valueToDate.js</a></p>
+
+<p>Purpose of this utility is transforming value to date with custom format.</p>
+
+<p>First of all, let’s analyze given utility and define the main cases for testing:</p>
+
+<ol>
+  <li>According to the purpose of this utility, it transforms value, so we need to check this value:
+    <ul>
+      <li>In case value is not defined: we need to be sure that utility will not return exception (error).</li>
+      <li>In case value defined: we need to check that utility returns moment date.</li>
+    </ul>
+  </li>
+  <li>The returned value should belong to the moment class; that’s why it should be instance of moment.</li>
+  <li>Second argument is dateFormat; set it as constant before tests. That’s why it will be passed in each test and return value according to date format. Should we test dateFormat separately? I suppose no. This argument is optional; if we don’t set dateFormat, the utility won’t break, and it’ll just return date in default format; it is a moment job, we shouldn’t test third-party libraries.</li>
+</ol>
+
+<p>As I mentioned before, we shouldn’t forget about moment-timezone; it is a very important point, especially for developers from different time zones.</p>
+
+<p><strong>Let’s code:</strong></p>
+
+<ol>
+  <li>
+    <p>Write test for first case; when we don’t have value, it is empty.</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> const format = 'DD.MM.YYYY';
+
+ it('render valueToDate utility with empty value', () =&gt; {
+     const value = valueToDate('', format);
+     expect(value).toEqual(null);
+ });
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Check if value is defined.</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> const date = '21.11.2015',
+       format = 'DD.MM.YYYY';
+
+ it('render valueToDate utility with defined value', () =&gt; {
+     const value = valueToDate(date, format);
+     expect(value).toEqual(moment(date, format));
+ });
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Check the value’s belonging to the moment class.</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> const date = '21.11.2015',
+     format = 'DD.MM.YYYY';
+
+ it('check value is instanceof moment', () =&gt; {
+     const value = valueToDate(date, format);
+     expect(value instanceof moment).toBeTruthy();
+ });
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p><em>Full tests listing:</em> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/utils/__tests__/valueToDate.test.js">valueToDate.test.js</a></p>
+
+<p><strong><a name="widgets-testing"></a> 3. Widgets testing</strong></p>
+
+<p>For widgets testing, I took spinner component.</p>
+
+<p><strong>Code listing for tested widget:</strong> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/widgets/Spinner.js">Spinner.js</a></p>
+
+<p><strong>Looks like:</strong></p>
+
+<p><img src="/assets/images/spinner.gif" alt="Spinner animation" /></p>
+
+<p>Spinner is not required in explanation, as almost all web resources have this component.
+So go to write tests:</p>
+
+<ol>
+  <li>
+    <p>First step - create snapshot:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('render correctly Spinner component', () =&gt; {
+    const SpinnerComponent = mount(&lt;Spinner /&gt;);
+    expect(SpinnerComponent).toMatchSnapshot();
+ });
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Testing props:</p>
+
+    <p>2.1 Default prop title, check if it renders correctly.</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check prop title by default', () =&gt; {
+     const SpinnerComponent = mount(&lt;Spinner /&gt;);
+     expect(SpinnerComponent.find('p').text()).toEqual('Please wait');
+ });
+</code></pre></div>    </div>
+
+    <p>2.2 Check custom prop title; I need to check that it returns correctly defined prop. Take a look at the code, the title wrapped in rawMarkup util, and outputs with the help of dangerouslySetInnerHTML property.</p>
+
+    <p>Code listing for rawMarkup util:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> export default function rawMarkup(template) {
+     return {__html: template};
+ }
+</code></pre></div>    </div>
+
+    <p>Do we need to include tests for rawMarkup in spinner component? No, it is a separate utility and it should be tested apart from the spinner. We don’t care how it works; we just need to know that title prop returns correct result.</p>
+
+    <p>Clarification: The reason of using dangerouslySetInnerHTML property is the following. Our site is multilingual, for which translations marketing team is responsible. They can translate it simply with combination of words or even decorate with the html tags, like <code class="highlighter-rouge">&lt;strong&gt;</code>, <code class="highlighter-rouge">&lt;i&gt;</code>, <code class="highlighter-rouge">&lt;s&gt;</code> or even slice text with the lists <code class="highlighter-rouge">&lt;ol&gt;</code>, <code class="highlighter-rouge">&lt;ul&gt;</code>; we don’t know for sure how they translate and decorate the text. We just need to correctly render all this stuff.</p>
+
+    <p>I combined two main test cases in one test:</p>
+    <ul>
+      <li>
+        <p>return correct custom prop title</p>
+      </li>
+      <li>
+        <p>render correctly prop title with html tags</p>
+      </li>
+    </ul>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check prop title with html tags', () =&gt; {
+     const props = {
+             title: '&lt;b&gt;Please wait&lt;/b&gt;'
+         },
+         SpinnerComponent = mount(&lt;Spinner {...props} /&gt;);
+     expect(SpinnerComponent.find('p').text()).toEqual('Please wait');
+ });
+</code></pre></div>    </div>
+
+    <p>Take next prop subTitle; it is optional and that’s why it doesn’t have default prop, so skip step with default props and test custom props:</p>
+
+    <ul>
+      <li>Check that text in subTitle prop renders correctly:</li>
+    </ul>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> const props = {
+         subTitle: 'left 1 minute'
+     },
+     SpinnerComponent = mount(&lt;Spinner {...props} /&gt;);
+
+ it('render correct text', () =&gt; {
+     expect(SpinnerComponent.find('p').at(1).text()).toEqual(props.subTitle);
+ });
+</code></pre></div>    </div>
+
+    <ul>
+      <li>We know that subTitle is optional; that’s why we need to check whether it is not rendered with default props, according to the slicing markup. Just check the number of tags <code class="highlighter-rouge">&lt;p&gt;</code>:</li>
+    </ul>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check subTitle is not rendered', () =&gt; {
+     const SpinnerComponent = mount(&lt;Spinner /&gt;);
+     expect(SpinnerComponent.find('p').length).toEqual(1);
+ });
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Testing prop types:</p>
+    <ul>
+      <li>For title prop expected to be string:</li>
+    </ul>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check prop type for title is string', () =&gt; {
+    const props = {
+            title: 'Wait'
+        },
+        SpinnerComponent = mount(&lt;Spinner {...props} /&gt;);
+    expect(SpinnerComponent.find('p').text()).toBeString();
+ });
+</code></pre></div>    </div>
+
+    <ul>
+      <li>For subTitle prop also expected to be string:</li>
+    </ul>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> const props = {
+        subTitle: 'left 1 minute'
+    },
+    SpinnerComponent = mount(&lt;Spinner {...props} /&gt;);
+
+ it('type for subTitle is string', () =&gt; {
+    expect(SpinnerComponent.find('p').at(1).text()).toBeString();
+ });
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p><em>Full tests listing:</em> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/widgets/__tests__/Spinner.test.js">Spinner.test.js</a></p>
+
+<p><strong><a name="modals-testing"></a>4. Modals testing (ModalWrapper.js and ModalTrigger.js)</strong></p>
+
+<p><strong>Looks like:</strong></p>
+
+<p><img src="/assets/images/modal.gif" alt="Spinner animation" /></p>
+
+<p><strong>How to test modals:</strong></p>
+
+<p>First of all, I want to explain how modals are organized on our project. We have two components: ModalWrapper.js and ModalTrigger.js.</p>
+
+<p><em>ModalWrapper</em> is responsible for popup layout. It contains modal container, button ‘close’, modal title and body.</p>
+
+<p><em>ModalTrigger</em> is responsible for modal handling. It includes ModalWrapper layout and contains events for modal’s layout control (open, close actions).</p>
+
+<p>I overview each component separately:</p>
+
+<p><strong><a name="modal-wrapper-testing"></a>1. Code listing for tested component:</strong> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/modals/ModalWrapper.js">ModalWrapper.js</a></p>
+
+<p><strong>Let’s code:</strong></p>
+
+<p>1.1 ModalWrapper receives component and renders it inside. First of all, check that ModalWrapper won’t fail without component. Create snapshot with default props:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('without component', () =&gt; {
+   const ModalWrapperComponent = shallow(&lt;ModalWrapper /&gt;);
+   expect(ModalWrapperComponent).toMatchSnapshot();
+});
+</code></pre></div></div>
+
+<p>1.2 Next step is to simulate its actual condition with component rendering passed through props:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('with component', () =&gt; {
+  const props = {
+          component: () =&gt; {}
+       },
+       ModalWrapperComponent = shallow(&lt;ModalWrapper {...props} /&gt;);
+   expect(ModalWrapperComponent).toMatchSnapshot();
+});
+</code></pre></div></div>
+
+<p>1.3 Testing props:</p>
+<ul>
+  <li>Receiving custom class name prop:</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('render correct class name', () =&gt; {
+  const props = {
+          modalClassName: 'custom-class-name'
+      },
+      ModalWrapperComponent = shallow(&lt;ModalWrapper {...props} /&gt;).find('Modal');
+      expect(ModalWrapperComponent.hasClass('custom-class-name')).toEqual(true);
+});
+</code></pre></div></div>
+
+<ul>
+  <li>Receiving custom title prop:</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('render correct title', () =&gt; {
+  const props = {
+         title: 'Modal Title'
+     },
+     ModalWrapperComponent = shallow(&lt;ModalWrapper {...props} /&gt;).find('ModalTitle');
+  expect(ModalWrapperComponent.props().children).toEqual('Modal Title');
+});
+</code></pre></div></div>
+
+<ul>
+  <li>Receiving correct show prop:</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('check prop value', () =&gt; {
+  const props = {
+         show: true
+     },
+     ModalWrapperComponent = shallow(&lt;ModalWrapper {...props} /&gt;).find('Modal');
+  expect(ModalWrapperComponent.props().show).toEqual(true);
+});
+</code></pre></div></div>
+
+<p>1.4 Testing proptypes:</p>
+<ul>
+  <li>for show prop</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('check prop type', () =&gt; {
+  const props = {
+         show: true
+      },
+      ModalWrapperComponent = shallow(&lt;ModalWrapper {...props} /&gt;).find('Modal');
+  expect(ModalWrapperComponent.props().show).toBeBoolean();
+});
+</code></pre></div></div>
+
+<ul>
+  <li>for onHide prop</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('render correct onHide prop type', () =&gt; {
+  const props = {
+          onHide: () =&gt; {}
+      },
+      ModalWrapperComponent = shallow(&lt;ModalWrapper {...props} /&gt;).find('Modal');
+  expect(ModalWrapperComponent.props().onHide).toBeFunction();
+});
+</code></pre></div></div>
+
+<ul>
+  <li>for component prop</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('render correct component prop type', () =&gt; {
+ const props = {
+         component: () =&gt; {}
+     },
+     ModalWrapperComponent = mount(&lt;ModalWrapper {...props} /&gt;);
+ expect(ModalWrapperComponent.props().component).toBeFunction();
+});
+</code></pre></div></div>
+
+<p><em>Full tests listing:</em> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/modals/__tests__/ModalWrapper.test.js">ModalWrapper.test.js</a></p>
+
+<p><strong><a name="modal-trigger-testing"></a>2. Code listing for tested component:</strong> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/modals/ModalTrigger.js">ModalTrigger.js</a></p>
+
+<p>The modal wrapper has covered with test; the second part is to cover modal trigger component.
+Component overview: it is based on the <strong>state <code class="highlighter-rouge">toggled</code></strong> that indicates visibility of ModalWrapper. If <strong><code class="highlighter-rouge">toggled: false</code></strong>, the popup is hidden, else visible. Function <strong>open()</strong> opens popup on child element; click event and function <strong>close()</strong> hides popup on button rendered in ModalWrapper.</p>
+
+<p>2.1 Snapshot creation:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('render ModalTrigger component correctly', () =&gt; {
+   const ModalTriggerComponent = shallow(&lt;ModalTrigger&gt;&lt;div /&gt;&lt;/ModalTrigger&gt;);
+   expect(ModalTriggerComponent).toMatchSnapshot();
+});
+</code></pre></div></div>
+
+<p>Should we test ModalTrigger with component prop rendering? No; because <code class="highlighter-rouge">component</code> will be rendered inside ModalWrapper component, it does not depend on the tested component. It was already covered with tests in the ModalWrapper tests.</p>
+
+<p>2.2 Testing props. We have one prop <code class="highlighter-rouge">children</code> and we want to be sure that we have only one child.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('ensure to have only one child (control element)', () =&gt; {
+   expect(ModalTriggerComponent.findWhere(node =&gt; node.key() === 'modal-control').length).toEqual(1);
+});
+</code></pre></div></div>
+
+<p>2.3 Testing proptypes. Children prop should be object, check this in the next test:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const ModalTriggerComponent = mount(&lt;ModalTrigger&gt;&lt;div /&gt;&lt;/ModalTrigger&gt;);
+
+it('check children prop type', () =&gt; {
+    expect(ModalTriggerComponent.props().children).toBeObject();
+});
+</code></pre></div></div>
+
+<p>2.4 Important part of ModalTrigger component is to check states.</p>
+
+<p>We have two states:</p>
+<ul>
+  <li>Popup is opened. To know that modal is opened, we need to check its state. For this, call open function from instance of the component and expect that <em><code class="highlighter-rouge">toggled</code></em> in state should be true.</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('check the modal is opened', () =&gt; {
+   const event = {
+       preventDefault: () =&gt; {},
+       stopPropagation: () =&gt; {}
+   };
+   ModalTriggerComponent.instance().open(event);
+   expect(ModalTriggerComponent.state().toggled).toBeTruthy();
+});
+</code></pre></div></div>
+
+<ul>
+  <li>Popup is closed, is tested vice versa, <em><code class="highlighter-rouge">toggled</code></em> in state should be false.</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it('check the modal is closed', () =&gt; {
+  ModalTriggerComponent.instance().close();
+  expect(ModalTriggerComponent.state().toggled).toBeFalsy();
+});
+</code></pre></div></div>
+
+<p><em>Full tests listing:</em> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/modals/__tests__/ModalTrigger.test.js">ModalTrigger.test.js</a></p>
+
+<p>Now modals are fully tested. One piece of advice for testing the components that are dependent on each other: look through the components first and write test plan, define what you need to test in each component, check test cases for each component, and be sure you don’t repeat the same test case in both components. Carefully analyze possible and optimal variants for test coverage.</p>
+
+<p><strong><a name="hoc-testing"></a>5. HOC testing (Higher-Order Component)</strong></p>
+
+<p>The last two parts (HOC and form’s fields testing) are interconnected. I would like to share with you how to test field layout with its HOC.</p>
+
+<p>Explanation of what is the BaseFieldLayout, why we need this component, and where we use it:</p>
+<ul>
+  <li>BaseFieldLayout.js is the wrapper for form input components like TextInput, CheckboxInput, DateInput, SelectInput, etc. Their names end with the <code class="highlighter-rouge">-Input</code> because we use redux-form package and these components are the input components to redux-form logic.</li>
+  <li>We need BaseFieldLayout for creating layout for form fields components, that is rendering label, tooltips, prefixes (currency, square meter abbreviations, etc.), icons, errors …</li>
+  <li>We use it in BaseFieldHOC.js for wrapping inputComponent in field layout and connect it with the redux-form with the help of <code class="highlighter-rouge">&lt;Field/&gt;</code> component.</li>
+</ul>
+
+<p><strong>Code listing for tested component:</strong> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/hoc/BaseFieldHOC.js">BaseFieldHOC.js</a></p>
+
+<p>It is a HOC which receives form input component and returns component, connected with redux-form.</p>
+
+<p>Analyze HOC:</p>
+<ul>
+  <li>This component receives only one prop, <code class="highlighter-rouge">component</code>. First of all, I need to create this component and wrap it in the BaseFieldHOC.</li>
+  <li>Next, I need to decorate wrapped HOC with redux-form in order to get field connected with redux-form.</li>
+  <li>Render this field inside React Redux <code class="highlighter-rouge">&lt;Provider&gt;</code> component to make the store available to tested component.
+To mock store, just do:</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const store = createStore(() =&gt; ({}));
+</code></pre></div></div>
+
+<p>Now, before each test, I need to do the next:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let BaseFieldHOCComponent;
+
+beforeEach(() =&gt; {
+    const TextInput = () =&gt; { return 'text input'; },
+        BaseFieldHOCWrapper = BaseFieldHOC(TextInput),
+        TextField = reduxForm({ form: 'testForm' })(BaseFieldHOCWrapper);
+    BaseFieldHOCComponent = renderer.create(
+        &lt;Provider store={store}&gt;
+            &lt;TextField name="text-input" /&gt;
+        &lt;/Provider&gt;
+    ).toJSON();
+});
+</code></pre></div></div>
+
+<p>After that, the component is ready for testing:</p>
+
+<ol>
+  <li>
+    <p>Create snapshot:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('render correctly component', () =&gt; {
+     expect(BaseFieldHOCComponent).toMatchSnapshot();
+ });
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Ensure that input component is wrapped in BaseFieldLayout after rendering:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check input component is wrapped in BaseFieldLayout', () =&gt; {
+     expect(BaseFieldHOCComponent.props.className).toEqual('form-group');
+ });
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>That’s all, the HOC is covered. The most complicated part in testing connected with redux-form components is to make preparation of the field (decorate with redux form and setup store); the rest is easy, just follow the instructions and nothing else.</p>
+
+<p><em>Full tests listing:</em> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/hoc/__tests__/BaseFieldHOC.test.js">BaseFieldHOC.test.js</a></p>
+
+<p><strong><a name="fields-testing"></a>6. Forms/fields testing</strong></p>
+
+<p>Field HOC has covered with tests and we can move to BaseFieldLayout component.</p>
+
+<p><strong>Code listing for tested component:</strong> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/forms/fields/BaseFieldLayout.js">BaseFieldLayout.js</a></p>
+
+<p>Let’s code BaseFieldLayout.js; write tests according to instructions above:</p>
+
+<ol>
+  <li>First of all, create snapshot. This component will not be rendered without defaultProps:
+    <ul>
+      <li>inputComponent</li>
+      <li>The props provided by redux-form: input and meta objects. Input with property name and meta with properties error and touched:</li>
+    </ul>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> const defaultProps = {
+     meta: {
+         touched: null,
+         error: null
+     },
+     input: {
+         name: 'field-name'
+     },
+     inputComponent: () =&gt; { return 'test case'; }
+ }
+</code></pre></div>    </div>
+
+    <p>To use defaultProps in each tested wrapper, do the following:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> import TestBaseFieldLayout from '../BaseFieldLayout';
+
+ const BaseFieldLayout = (props) =&gt; &lt;TestBaseFieldLayout {...defaultProps} {...props} /&gt;;
+</code></pre></div>    </div>
+
+    <p>Now we are ready to create snapshot:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('render correctly BaseFieldLayout component', () =&gt; {
+     const BaseFieldLayoutComponent = renderer.create(&lt;BaseFieldLayout /&gt;).toJSON();
+     expect(BaseFieldLayoutComponent).toMatchSnapshot();
+ });
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Testing props:</p>
+
+    <p>This component has many props. I will show examples of several ones; the rest are tested by analogy.</p>
+
+    <ul>
+      <li>Ensure <code class="highlighter-rouge">icon</code> prop is rendered correctly</li>
+    </ul>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('render correctly icon prop', () =&gt; {
+    const props = {
+            icon: &lt;span className="icon-exclamation" /&gt;
+        },
+        BaseFieldLayoutComponent = mount(&lt;BaseFieldLayout {...props} /&gt;);
+        expect(BaseFieldLayoutComponent.find('span').hasClass('icon-exclamation')).toBeTruthy();
+ });
+</code></pre></div>    </div>
+
+    <ul>
+      <li>Ensure tooltip content renders next to the label</li>
+    </ul>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> const props = {
+        labelTooltipContent: 'tooltip for label'
+    },
+    BaseFieldLayoutComponent = mount(&lt;BaseFieldLayout {...props} /&gt;);
+
+ it('check prop is rendered', () =&gt; {
+   expect(BaseFieldLayoutComponent.find('span').hasClass('tooltip-icon')).toBeTruthy();
+ });
+</code></pre></div>    </div>
+
+    <ul>
+      <li>Testing <code class="highlighter-rouge">fieldLink</code> prop</li>
+      <li>Ensure fieldLink is null by default</li>
+    </ul>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check prop is null by default', () =&gt; {
+     const BaseFieldLayoutComponent = shallow(&lt;BaseFieldLayout /&gt;);
+     expect(BaseFieldLayoutComponent.props().fieldLink).toBe(null);
+ });
+</code></pre></div>    </div>
+
+    <ul>
+      <li>Ensure fieldLink renders correctly with custom value</li>
+    </ul>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> describe('render correctly fieldLink', () =&gt; {
+     const props = {
+         fieldLink: &lt;a href="#" /&gt;
+     };
+
+     it('check prop is rendered with defined link', () =&gt; {
+         const BaseFieldLayoutComponent = mount(&lt;BaseFieldLayout {...props} /&gt;);
+         expect(BaseFieldLayoutComponent.contains(props.fieldLink)).toBeTruthy();
+     });
+ });
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Testing errors:</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> it('check if field has error', () =&gt; {
+     const props = {
+             meta: {
+                 touched: true,
+                 error: 'This field is required'
+             }
+         },
+         BaseFieldLayoutComponent = mount(&lt;BaseFieldLayout {...props} /&gt;);
+     expect(BaseFieldLayoutComponent.find('.error')).toHaveLength(1);
+ });
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p><em>Full tests listing:</em> <a href="https://github.com/ned-alyona/testing-jest-enzyme/blob/master/shared/forms/fields/__tests__/BaseFieldLayout.test.js">BaseFieldLayout.test.js</a></p>
+
+<h2 id="bottom-line">Bottom Line</h2>
+<p>Now you have full guidance on how to perform full coverage testing of components based on project structure. From my own experience, I tried to explain what is necessary to test, in which order, and what you can omit in test coverage. Also, I demonstrated examples of several testing components and spotted the sequence of codebase coverage. I hope that you will find this article useful and will share your response. Thank you for reading.</p>
+
+<p>Originally published on <a href="https://djangostars.com/blog/what-and-how-to-test-with-enzyme-and-jest-full-instruction-on-react-component-testing/">Django Stars blog</a>.</p>
+
+  </div><a class="u-url" href="/testing/2018/09/28/what-and-how-to-test-with-jest-and-enzyme.html" hidden></a>
+</article>
+</div>
+
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Frontend Info</li><li><a class="u-email" href="mailto:alona.nedelchenko@djangostars.com">alona.nedelchenko@djangostars.com</a></li><ul class="social-media-list"><li><a href="https://github.com/ned-alyona"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username"></span></a></li><li><a href="https://www.linkedin.com/in/nedelchenko-alyona-2663bb78"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#linkedin"></use></svg> <span class="username"></span></a></li></ul>
+</ul>
+      </div>
+
+      <div class="footer-col footer-col-2"></div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
