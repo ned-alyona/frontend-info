@@ -17,8 +17,8 @@ title: Frontend Info
 email: alona.nedelchenko@djangostars.com
 description: >- # this means to ignore newlines until "baseurl:"
 # Frontend blog
-baseurl: "frontend-info" # the subpath of your site, e.g. /blog
-url: "frontend-info" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "." # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  ned-alyona
 linkedin_username: nedelchenko-alyona-2663bb78
 
